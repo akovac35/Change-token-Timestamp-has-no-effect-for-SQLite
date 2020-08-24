@@ -21,22 +21,18 @@ namespace SQLiteConcurrencyTokenIssue
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            var connStr = "Filename=:memory:";
-            var conn = new SqliteConnection(connStr);
-            conn.Open();
-
             CustomOnWrite = writeContext =>
             {
-                Console.WriteLine(writeContext);
+                TestContext.WriteLine(writeContext);
             };
 
             CustomOnBeginScope = scopeContext =>
             {
-                Console.WriteLine(scopeContext);
+                TestContext.WriteLine(scopeContext);
             };
 
             ServiceCollectionInstance = new ServiceCollection();
-            ServiceCollectionInstance.AddTestLogger();
+            ServiceCollectionInstance.AddTestLogger(CustomOnWrite, CustomOnBeginScope);
             ServiceCollectionInstance.AddSingleton<SqliteConnection>(fact =>
             {
                 var connStr = "Filename=:memory:";
